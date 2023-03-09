@@ -1,4 +1,5 @@
 #include <fstream>
+#include <string>
 
 /// Output image resolution
 static const int imageWidth = 1920;
@@ -12,9 +13,26 @@ int main() {
 	ppmFileStream << imageWidth << " " << imageHeight << "\n";
 	ppmFileStream << maxColorComponent << "\n";
 
+	std::string color = "0 0 0\t";
+
 	for (int rowIdx = 0; rowIdx < imageHeight; ++rowIdx) {
+		if(rowIdx%100==0){
+				if(color=="0 0 0\t"){
+					color = "255 0 255\t";
+				}else{
+					color = "0 0 0\t";
+				}
+			}
 		for (int colIdx = 0; colIdx < imageWidth; ++colIdx) {
-			ppmFileStream << "0 0 255\t";
+			if(colIdx%100==0){
+				if(color=="0 0 0\t"){
+					color = "255 0 255\t";
+				}else{
+					color = "0 0 0\t";
+				}
+			}
+
+			ppmFileStream << color;
 		}
 		ppmFileStream << "\n";
 	}
