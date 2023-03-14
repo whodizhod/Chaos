@@ -7,6 +7,7 @@ static const int imageHeight = 1080;
 
 static const int maxColorComponent = 255;
 
+/// Generates .ppm file with missing texture texture Source engine style.
 int main() {
 	std::ofstream ppmFileStream("missing_texture.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";
@@ -26,7 +27,7 @@ int main() {
 		for (int colIdx = 0; colIdx < imageWidth; ++colIdx) {
 			if(colIdx%100==0){
 				if(color=="0 0 0\t"){
-					color = "255 0 255\t";
+					color = "255 0 254\t";
 				}else{
 					color = "0 0 0\t";
 				}
