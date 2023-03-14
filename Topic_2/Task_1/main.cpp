@@ -1,4 +1,5 @@
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <cstdlib>
 #include <iostream>
@@ -12,29 +13,52 @@ static const int maxColorComponent = 255;
 std::string pixel[imageWidth][imageHeight];
 
 std::string getColor(std::string color){
-	if(color == "black")
-	return "255 255 255\t";
+	std::ostringstream os;
 
-	if(color == "white")
-	return "0 0 0\t";
+	if(color == "black"){
+		os << rand()%64 << " " << rand()%64 << " " << rand()%64 << "\t";
+		return os.str();
+	}
+
+	if(color == "grey"){
+		os << rand()%128 << " " << rand()%128 << " " << rand()%128 << "\t";
+		return os.str();
+	}
+
+	if(color == "white"){
+		os << rand()%255 << " " << rand()%255 << " " << rand()%255 << "\t";
+		return os.str();
+	}
 	
-	if(color == "red")
-	return "255 0 0\t";
+	if(color == "red"){
+		os << "255 " << rand()%255 << " " << rand()%255 << "\t";
+		return os.str();
+	}
 
-	if(color == "green")
-	return "0 255 0\t";
+	if(color == "green"){
+		os << rand()%255 << " 255 " << rand()%255 << "\t";
+		return os.str();
+	}
 	
-	if(color == "blue")
-	return "0 0 255\t";
+	if(color == "blue"){
+		os << rand()%255 << " " << rand()%255 << " 255\t";
+		return os.str();
+	}
 
-	if(color == "cyan")
-	return "0 255 255\t";
+	if(color == "cyan"){
+		os << rand()%255 << " 255 255\t";
+		return os.str();
+	}
 
-	if(color == "magenta")
-	return "255 0 255\t";
+	if(color == "magenta"){
+		os << "255 " << rand()%255 << " 255\t";
+		return os.str();
+	}
 
-	if(color == "yellow")
-	return "255 255 0\t";
+	if(color == "yellow"){
+		os << "255 255 " << rand()%255 << "\t";
+		return os.str();
+	}
 }
 
 /// Fills all pixels with white color
@@ -57,10 +81,15 @@ void drawRectangle(int x1, int y1, int x2, int y2, std::string color){
 
 int main() {
 	pixelInit();
-	drawRectangle(0, 0, 300, 700, "red");
-	drawRectangle(300, 700, 500, 800, "green");
-	drawRectangle(200, 200, 700, 700, "blue");
-	drawRectangle(300, 300, 600, 600, "magenta");
+	drawRectangle(0, 0, 300, 300, "black");
+	drawRectangle(300, 0, 600, 300, "grey");
+	drawRectangle(600, 0, 900, 300, "white");
+	drawRectangle(0, 300, 300, 600, "red");
+	drawRectangle(300, 300, 600, 600, "green");
+	drawRectangle(600, 300, 900, 600, "blue");
+	drawRectangle(0, 600, 300, 900, "cyan");
+	drawRectangle(300, 600, 600, 900, "magenta");
+	drawRectangle(600, 600, 900, 900, "yellow");
 
 	std::ofstream ppmFileStream("main.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";
