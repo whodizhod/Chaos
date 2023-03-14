@@ -1,3 +1,6 @@
+// TODO: Optimize drawRectangle
+// Start drawing from the first pixel of the rectangle
+
 #include <fstream>
 #include <sstream>
 #include <string>
