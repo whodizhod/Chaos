@@ -60,6 +60,9 @@ std::string getColor(std::string color){
 		os << "255 255 " << rand()%255 << "\t";
 		return os.str();
 	}
+
+	os << rand()%255 << " " << rand()%255 << " " << rand()%255 << "\t";
+	return os.str();
 }
 
 // Fills pixel[][] with white color
