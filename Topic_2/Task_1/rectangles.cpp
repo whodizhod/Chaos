@@ -98,7 +98,7 @@ int main() {
 	drawRectangle(300, 600, 600, 900, "magenta");
 	drawRectangle(600, 600, 900, 900, "yellow");
 
-	std::ofstream ppmFileStream("main.ppm", std::ios::out | std::ios::binary);
+	std::ofstream ppmFileStream("rectangles.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";
 	ppmFileStream << imageWidth << " " << imageHeight << "\n";
 	ppmFileStream << maxColorComponent << "\n";
