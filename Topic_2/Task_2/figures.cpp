@@ -4,16 +4,17 @@
 #include <cstdlib>
 #include <iostream>
 
-/// Output image resolution
+// Output image resolution
 static const int imageWidth = 900;
 static const int imageHeight = 900;
 
 static const int maxColorComponent = 255;
 
-std::string pixel[imageWidth][imageHeight];
+// Screen
+static std::string pixel[imageWidth][imageHeight];
 
-// Translates string color and returns corresponding data
-std::string getColor(std::string color){
+// Translates color string to data with noise
+std::string getColor(std::string color) {
 	std::ostringstream os;
 
 	if(color == "black"){
@@ -60,9 +61,12 @@ std::string getColor(std::string color){
 		os << "255 255 " << rand()%255 << "\t";
 		return os.str();
 	}
+
+	os << rand()%255 << " " << rand()%255 << " " << rand()%255 << "\t";
+	return os.str();
 }
 
-// Fills pixel[][] with white color
+// Fills the screen with white color
 void pixelInit(){	
 	for(int y = 0; y < imageHeight; ++y){
 		for(int x = 0; x < imageWidth; ++x){
@@ -71,11 +75,17 @@ void pixelInit(){
 	}
 }
 
-// Draws rectangle
-// x1 and y1 - Upper left corner coordinates
-// x2 and y2 - Bottom right corner coordinates
-// color (black, grey, white, red, green, blue, cyan, magenta, yellow)
-void drawRectangle(int x1, int y1, int x2, int y2, std::string color){
+// Fills the screen
+void pixelInit(std::string color){	
+	for(int y = 0; y < imageHeight; ++y){
+		for(int x = 0; x < imageWidth; ++x){
+			pixel[x][y] = getColor(color);
+		}
+	}
+}
+
+// Draws filled rectangle
+void drawRectangle(int x1, int y1, int x2, int y2, std::string color) {
 	for(int y = y1; y < y2; ++y){
 		for(int x = x1; x < x2; ++x){
 			pixel[x][y] = getColor(color);
@@ -83,19 +93,44 @@ void drawRectangle(int x1, int y1, int x2, int y2, std::string color){
 	}
 }
 
-int main() {
-	pixelInit();
-	drawRectangle(0, 0, 300, 300, "black");
-	drawRectangle(300, 0, 600, 300, "grey");
-	drawRectangle(600, 0, 900, 300, "white");
-	drawRectangle(0, 300, 300, 600, "red");
-	drawRectangle(300, 300, 600, 600, "green");
-	drawRectangle(600, 300, 900, 600, "blue");
-	drawRectangle(0, 600, 300, 900, "cyan");
-	drawRectangle(300, 600, 600, 900, "magenta");
-	drawRectangle(600, 600, 900, 900, "yellow");
+// Draws a filled circle
+void drawCircle(int xc, int yc, int r, std::string color) {
+	int d = (5 - r * 4)/4;
+    int x = 0;
+    int y = r;
+	int count;
 
-	std::ofstream ppmFileStream("main.ppm", std::ios::out | std::ios::binary);
+    do {
+		count = xc + x;
+		do{
+			pixel[count][yc + y] = getColor(color);
+			pixel[count][yc - y] = getColor(color);
+			count--;
+		} while (count >= xc - x);
+
+		count = yc + y;
+		do{ 
+			pixel[count][xc + x] = getColor(color);
+			pixel[count][xc - x] = getColor(color);
+			count--;
+		} while (count >= yc - y);
+
+        if (d < 0) {
+            d += 2*x + 1;
+        } else {
+            d += 2*(x - y) + 1;
+            y--;
+        }
+        x++;
+
+    } while (x <= y);
+}
+
+int main() {
+	pixelInit("grey");
+	drawCircle(450, 450, 300, "green");
+
+	std::ofstream ppmFileStream("figures.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";
 	ppmFileStream << imageWidth << " " << imageHeight << "\n";
 	ppmFileStream << maxColorComponent << "\n";
@@ -108,6 +143,6 @@ int main() {
 	}
 
 	ppmFileStream.close();
-
+	
 	return 0;
 }
