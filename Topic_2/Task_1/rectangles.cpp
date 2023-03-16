@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 
-/// Output image resolution
+// Output image resolution
 static const int imageWidth = 900;
 static const int imageHeight = 900;
 
@@ -75,9 +75,6 @@ void pixelInit(){
 }
 
 // Draws rectangle
-// x1 and y1 - Upper left corner coordinates
-// x2 and y2 - Bottom right corner coordinates
-// color (black, grey, white, red, green, blue, cyan, magenta, yellow)
 void drawRectangle(int x1, int y1, int x2, int y2, std::string color){
 	for(int y = y1; y < y2; ++y){
 		for(int x = x1; x < x2; ++x){
