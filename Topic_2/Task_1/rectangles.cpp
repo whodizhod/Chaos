@@ -1,8 +1,8 @@
-#include <fstream>
-#include <sstream>
+#include <array>
 #include <string>
-#include <cstdlib>
-#include <iostream>
+#include <sstream>
+#include <random>
+#include <fstream>
 
 // Output image resolution
 static const int imageWidth = 900;
@@ -10,81 +10,83 @@ static const int imageHeight = 900;
 
 static const int maxColorComponent = 255;
 
-std::string pixel[imageWidth][imageHeight];
+std::array <std::array <std::string, imageWidth>, imageHeight> bitMap;
 
 // Translates string color and returns corresponding data
-std::string getColor(std::string color){
+std::string getColor(const std::string& color) {
 	std::ostringstream os;
 
-	if(color == "black"){
-		os << rand()%64 << " " << rand()%64 << " " << rand()%64 << "\t";
+	std::random_device rd;
+
+	if (color == "black") {
+		os << rd() % 64 << " " << rd() % 64 << " " << rd() % 64 << "\t";
 		return os.str();
 	}
 
-	if(color == "grey"){
-		os << rand()%128 << " " << rand()%128 << " " << rand()%128 << "\t";
+	if (color == "grey") {
+		os << rd() % 128 << " " << rd() % 128 << " " << rd() % 128 << "\t";
 		return os.str();
 	}
 
-	if(color == "white"){
-		os << rand()%255 << " " << rand()%255 << " " << rand()%255 << "\t";
-		return os.str();
-	}
-	
-	if(color == "red"){
-		os << "255 " << rand()%255 << " " << rand()%255 << "\t";
+	if (color == "white") {
+		os << rd() % 255 << " " << rd() % 255 << " " << rd() % 255 << "\t";
 		return os.str();
 	}
 
-	if(color == "green"){
-		os << rand()%255 << " 255 " << rand()%255 << "\t";
-		return os.str();
-	}
-	
-	if(color == "blue"){
-		os << rand()%255 << " " << rand()%255 << " 255\t";
+	if (color == "red") {
+		os << "255 " << rd() % 255 << " " << rd() % 255 << "\t";
 		return os.str();
 	}
 
-	if(color == "cyan"){
-		os << rand()%255 << " 255 255\t";
+	if (color == "green") {
+		os << rd() % 255 << " 255 " << rd() % 255 << "\t";
 		return os.str();
 	}
 
-	if(color == "magenta"){
-		os << "255 " << rand()%255 << " 255\t";
+	if (color == "blue") {
+		os << rd() % 255 << " " << rd() % 255 << " 255\t";
 		return os.str();
 	}
 
-	if(color == "yellow"){
-		os << "255 255 " << rand()%255 << "\t";
+	if (color == "cyan") {
+		os << rd() % 255 << " 255 255\t";
 		return os.str();
 	}
 
-	os << rand()%255 << " " << rand()%255 << " " << rand()%255 << "\t";
+	if (color == "magenta") {
+		os << "255 " << rd() % 255 << " 255\t";
+		return os.str();
+	}
+
+	if (color == "yellow") {
+		os << "255 255 " << rd() % 255 << "\t";
+		return os.str();
+	}
+
+	os << rd() % 255 << " " << rd() % 255 << " " << rd() % 255 << "\t";
 	return os.str();
 }
 
-// Fills pixel[][] with white color
-void pixelInit(){	
-	for(int y = 0; y < imageHeight; ++y){
-		for(int x = 0; x < imageWidth; ++x){
-			pixel[x][y] = "255 255 255\t";
+// Fills bitMap with white color
+void initBitMap() {
+	for (int y = 0; y < imageHeight; ++y) {
+		for (int x = 0; x < imageWidth; ++x) {
+			bitMap[x][y] = "255 255 255\t";
 		}
 	}
 }
 
 // Draws rectangle
-void drawRectangle(int x1, int y1, int x2, int y2, std::string color){
-	for(int y = y1; y < y2; ++y){
-		for(int x = x1; x < x2; ++x){
-			pixel[x][y] = getColor(color);
+void drawRectangle(int x1, int y1, int x2, int y2, const std::string& color) {
+	for (int y = y1; y < y2; ++y) {
+		for (int x = x1; x < x2; ++x) {
+			bitMap[x][y] = getColor(color);
 		}
 	}
 }
 
 int main() {
-	pixelInit();
+	initBitMap();
 	drawRectangle(0, 0, 300, 300, "black");
 	drawRectangle(300, 0, 600, 300, "grey");
 	drawRectangle(600, 0, 900, 300, "white");
@@ -102,7 +104,7 @@ int main() {
 
 	for (int rowIdx = 0; rowIdx < imageHeight; ++rowIdx) {
 		for (int colIdx = 0; colIdx < imageWidth; ++colIdx) {
-			ppmFileStream << pixel[colIdx][rowIdx];
+			ppmFileStream << bitMap[colIdx][rowIdx];
 		}
 		ppmFileStream << "\n";
 	}
