@@ -12,59 +12,74 @@ static const int maxColorComponent = 255;
 
 std::array <std::array <std::string, imageWidth>, imageHeight> bitMap;
 
-// Translates string color and returns corresponding data
-std::string getColor(const std::string& color) {
-	std::ostringstream os;
+enum class Color { black, grey, white, red, green, blue, cyan, magenta, yellow };
 
+// Returns data for the corresponding color
+std::string getColor(const Color& color) {
+	std::ostringstream os;
 	std::random_device rd;
 
-	if (color == "black") {
+	switch (color) {
+	case Color::black:
+
 		os << rd() % 64 << " " << rd() % 64 << " " << rd() % 64 << "\t";
 		return os.str();
-	}
+		break;
 
-	if (color == "grey") {
+	case Color::grey:
+
 		os << rd() % 128 << " " << rd() % 128 << " " << rd() % 128 << "\t";
 		return os.str();
-	}
+		break;
 
-	if (color == "white") {
+	case Color::white:
+
 		os << rd() % 255 << " " << rd() % 255 << " " << rd() % 255 << "\t";
 		return os.str();
-	}
+		break;
 
-	if (color == "red") {
+	case Color::red:
+
 		os << "255 " << rd() % 255 << " " << rd() % 255 << "\t";
 		return os.str();
-	}
+		break;
 
-	if (color == "green") {
+	case Color::green:
+
 		os << rd() % 255 << " 255 " << rd() % 255 << "\t";
 		return os.str();
-	}
+		break;
 
-	if (color == "blue") {
+	case Color::blue:
+
 		os << rd() % 255 << " " << rd() % 255 << " 255\t";
 		return os.str();
-	}
+		break;
 
-	if (color == "cyan") {
+	case Color::cyan:
+
 		os << rd() % 255 << " 255 255\t";
 		return os.str();
-	}
+		break;
 
-	if (color == "magenta") {
+	case Color::magenta:
+
 		os << "255 " << rd() % 255 << " 255\t";
 		return os.str();
-	}
+		break;
 
-	if (color == "yellow") {
+	case Color::yellow:
+
 		os << "255 255 " << rd() % 255 << "\t";
 		return os.str();
-	}
+		break;
 
-	os << rd() % 255 << " " << rd() % 255 << " " << rd() % 255 << "\t";
-	return os.str();
+	default:
+
+		os << rd() % 255 << " " << rd() % 255 << " " << rd() % 255 << "\t";
+		return os.str();
+		break;
+	}
 }
 
 // Fills bitMap with white color
@@ -77,7 +92,7 @@ void initBitMap() {
 }
 
 // Draws rectangle
-void drawRectangle(int x1, int y1, int x2, int y2, const std::string& color) {
+void drawRectangle(int x1, int y1, int x2, int y2, const Color& color) {
 	for (int y = y1; y < y2; ++y) {
 		for (int x = x1; x < x2; ++x) {
 			bitMap[x][y] = getColor(color);
@@ -87,15 +102,15 @@ void drawRectangle(int x1, int y1, int x2, int y2, const std::string& color) {
 
 int main() {
 	initBitMap();
-	drawRectangle(0, 0, 300, 300, "black");
-	drawRectangle(300, 0, 600, 300, "grey");
-	drawRectangle(600, 0, 900, 300, "white");
-	drawRectangle(0, 300, 300, 600, "red");
-	drawRectangle(300, 300, 600, 600, "green");
-	drawRectangle(600, 300, 900, 600, "blue");
-	drawRectangle(0, 600, 300, 900, "cyan");
-	drawRectangle(300, 600, 600, 900, "magenta");
-	drawRectangle(600, 600, 900, 900, "yellow");
+	drawRectangle(0, 0, 300, 300, Color::black);
+	drawRectangle(300, 0, 600, 300, Color::grey);
+	drawRectangle(600, 0, 900, 300, Color::white);
+	drawRectangle(0, 300, 300, 600, Color::red);
+	drawRectangle(300, 300, 600, 600, Color::green);
+	drawRectangle(600, 300, 900, 600, Color::blue);
+	drawRectangle(0, 600, 300, 900, Color::cyan);
+	drawRectangle(300, 600, 600, 900, Color::magenta);
+	drawRectangle(600, 600, 900, 900, Color::yellow);
 
 	std::ofstream ppmFileStream("rectangles.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";
