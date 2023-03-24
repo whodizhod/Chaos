@@ -10,7 +10,7 @@ static const int imageHeight = 900;
 
 static const int maxColorComponent = 255;
 
-std::array <std::array <std::string, imageWidth>, imageHeight> bitMap;
+using bitmap = std::array<std::array<std::string, imageWidth>, imageHeight>;
 
 enum class Color { black, grey, white, red, green, blue, cyan, magenta, yellow };
 
@@ -83,7 +83,7 @@ std::string getColor(const Color& color) {
 }
 
 // Fills bitMap with white color
-void initBitMap() {
+void initBitMap(bitmap& bitMap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
 			bitMap[x][y] = "255 255 255\t";
@@ -92,7 +92,7 @@ void initBitMap() {
 }
 
 // Draws rectangle
-void drawRectangle(int x1, int y1, int x2, int y2, const Color& color) {
+void drawRectangle(int x1, int y1, int x2, int y2, const Color& color, bitmap& bitMap) {
 	for (int y = y1; y < y2; ++y) {
 		for (int x = x1; x < x2; ++x) {
 			bitMap[x][y] = getColor(color);
@@ -101,16 +101,17 @@ void drawRectangle(int x1, int y1, int x2, int y2, const Color& color) {
 }
 
 int main() {
-	initBitMap();
-	drawRectangle(0, 0, 300, 300, Color::black);
-	drawRectangle(300, 0, 600, 300, Color::grey);
-	drawRectangle(600, 0, 900, 300, Color::white);
-	drawRectangle(0, 300, 300, 600, Color::red);
-	drawRectangle(300, 300, 600, 600, Color::green);
-	drawRectangle(600, 300, 900, 600, Color::blue);
-	drawRectangle(0, 600, 300, 900, Color::cyan);
-	drawRectangle(300, 600, 600, 900, Color::magenta);
-	drawRectangle(600, 600, 900, 900, Color::yellow);
+	static bitmap bitMap;
+	initBitMap(bitMap);
+	drawRectangle(0, 0, 300, 300, Color::black, bitMap);
+	drawRectangle(300, 0, 600, 300, Color::grey, bitMap);
+	drawRectangle(600, 0, 900, 300, Color::white, bitMap);
+	drawRectangle(0, 300, 300, 600, Color::red, bitMap);
+	drawRectangle(300, 300, 600, 600, Color::green, bitMap);
+	drawRectangle(600, 300, 900, 600, Color::blue, bitMap);
+	drawRectangle(0, 600, 300, 900, Color::cyan, bitMap);
+	drawRectangle(300, 600, 600, 900, Color::magenta, bitMap);
+	drawRectangle(600, 600, 900, 900, Color::yellow, bitMap);
 
 	std::ofstream ppmFileStream("rectangles.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";

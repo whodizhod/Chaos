@@ -10,7 +10,7 @@ static const int imageHeight = 900;
 
 static const int maxColorComponent = 255;
 
-std::array <std::array <std::string, imageWidth>, imageHeight> bitMap;
+using bitmap = std::array<std::array<std::string, imageWidth>, imageHeight>;
 
 enum class Color { black, grey, white, red, green, blue, cyan, magenta, yellow };
 
@@ -24,66 +24,56 @@ std::string getColor(const Color& color) {
 
 		os << rd() % 64 << " " << rd() % 64 << " " << rd() % 64 << "\t";
 		return os.str();
-		break;
 
 	case Color::grey:
 
 		os << rd() % 128 << " " << rd() % 128 << " " << rd() % 128 << "\t";
 		return os.str();
-		break;
 
 	case Color::white:
 
 		os << rd() % 255 << " " << rd() % 255 << " " << rd() % 255 << "\t";
 		return os.str();
-		break;
 
 	case Color::red:
 
 		os << "255 " << rd() % 255 << " " << rd() % 255 << "\t";
 		return os.str();
-		break;
 
 	case Color::green:
 
 		os << rd() % 255 << " 255 " << rd() % 255 << "\t";
 		return os.str();
-		break;
 
 	case Color::blue:
 
 		os << rd() % 255 << " " << rd() % 255 << " 255\t";
 		return os.str();
-		break;
 
 	case Color::cyan:
 
 		os << rd() % 255 << " 255 255\t";
 		return os.str();
-		break;
 
 	case Color::magenta:
 
 		os << "255 " << rd() % 255 << " 255\t";
 		return os.str();
-		break;
 
 	case Color::yellow:
 
 		os << "255 255 " << rd() % 255 << "\t";
 		return os.str();
-		break;
 
 	default:
 
 		os << rd() % 255 << " " << rd() % 255 << " " << rd() % 255 << "\t";
 		return os.str();
-		break;
 	}
 }
 
 // Fills bitMap with white color
-void initBitMap() {
+void initBitMap(bitmap& bitMap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
 			bitMap[x][y] = "255 255 255\t";
@@ -92,7 +82,7 @@ void initBitMap() {
 }
 
 // Fills the screen
-void initBitMap(const Color& color) {
+void initBitMap(const Color& color, bitmap& bitMap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
 			bitMap[x][y] = getColor(color);
@@ -101,7 +91,7 @@ void initBitMap(const Color& color) {
 }
 
 // Draws rectangle
-void drawRectangle(int x1, int y1, int x2, int y2, const Color& color) {
+void drawRectangle(int x1, int y1, int x2, int y2, const Color& color, bitmap& bitMap) {
 	for (int y = y1; y < y2; ++y) {
 		for (int x = x1; x < x2; ++x) {
 			bitMap[x][y] = getColor(color);
@@ -110,7 +100,7 @@ void drawRectangle(int x1, int y1, int x2, int y2, const Color& color) {
 }
 
 // Draws a filled circle
-void drawCircle(int xc, int yc, int r, const Color& color) {
+void drawCircle(int xc, int yc, int r, const Color& color, bitmap& bitMap) {
 	int d = (5 - r * 4) / 4;
 	int x = 0;
 	int y = r;
@@ -143,8 +133,9 @@ void drawCircle(int xc, int yc, int r, const Color& color) {
 }
 
 int main() {
-	initBitMap(Color::grey);
-	drawCircle(450, 450, 300, Color::green);
+	static bitmap bitMap;
+	initBitMap(Color::grey, bitMap);
+	drawCircle(450, 450, 300, Color::green, bitMap);
 
 	std::ofstream ppmFileStream("figures.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";
