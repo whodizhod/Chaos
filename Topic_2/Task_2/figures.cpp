@@ -5,7 +5,7 @@
 #include <fstream>
 
 // Output image resolution
-static const int imageWidth = 900;
+static const int imageWidth = 900;//!!! Program crashes if imageWidth > imageHeight !!!
 static const int imageHeight = 900;
 
 static const int maxColorComponent = 255;
@@ -101,35 +101,12 @@ void drawRectangle(int x1, int y1, int x2, int y2, const Color& color, bitmap& b
 
 // Draws a filled circle
 void drawCircle(int xc, int yc, int r, const Color& color, bitmap& bitMap) {
-	int d = (5 - r * 4) / 4;
-	int x = 0;
-	int y = r;
-	int count;
-
-	do {
-		count = xc + x;
-		do {
-			bitMap[count][yc + y] = getColor(color);
-			bitMap[count][yc - y] = getColor(color);
-			count--;
-		} while (count >= xc - x);
-
-		count = yc + y;
-		do {
-			bitMap[count][xc + x] = getColor(color);
-			bitMap[count][xc - x] = getColor(color);
-			count--;
-		} while (count >= yc - y);
-
-		if (d < 0) {
-			d += 2 * x + 1;
+	for (int y = yc - r; y < imageHeight; ++y) {
+		for (int x = xc - r; x < imageWidth; ++x) {
+			if (r >= sqrt(pow(abs(x - xc), 2) + pow(abs(y - yc), 2)))
+				bitMap[x][y] = getColor(color);
 		}
-		else {
-			d += 2 * (x - y) + 1;
-			y--;
-		}
-		x++;
-	} while (x <= y);
+	}
 }
 
 int main() {
