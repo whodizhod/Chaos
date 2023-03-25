@@ -3,14 +3,15 @@
 #include <sstream>
 #include <random>
 #include <fstream>
+#include <cmath>
 
 // Output image resolution
-static const int imageWidth = 900;//!!! Program crashes if imageWidth > imageHeight !!!
+static const int imageWidth = 900;
 static const int imageHeight = 900;
 
 static const int maxColorComponent = 255;
 
-using bitmap = std::array<std::array<std::string, imageWidth>, imageHeight>;
+using bitmap = std::array<std::array<std::string, imageHeight>, imageWidth>;
 
 enum class Color { black, grey, white, red, green, blue, cyan, magenta, yellow };
 
