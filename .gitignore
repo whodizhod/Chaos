@@ -3,3 +3,8 @@
 *.json
 /.vs
 /projects
+/Topic_3/.vs/Topic_3
+*.vcxproj
+*.filters
+*.user
+*.sln
