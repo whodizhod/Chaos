@@ -8,3 +8,8 @@ My work for "Ray Tracing course" by Chaos Group
         
     - Task 2:
         Generating P3 .ppm file with encoded green-noise circle with grey-noise background.
+
+  - Topic 3:
+    
+    - Task 1:
+          Generating P3 .ppm file with encoded rays.
