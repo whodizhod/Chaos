@@ -48,12 +48,33 @@ void toScreenSpaceAspect(Bitmap& bitMap) {
 	}
 }
 
+// Converts coordinates to Screen space
+// with aspect ratio and normalizes the vectors
+void normalize(Bitmap& bitMap) {
+	float max_magnitude = 1;
+
+	for (int y = 0; y < imageHeight; ++y) {
+		for (int x = 0; x < imageWidth; ++x) {
+
+			bitMap[x][y].x = (((2.0f * ((x + pixelCenter) / imageWidth)) - 1.0f) * (float(imageWidth) / float(imageHeight)));
+			bitMap[x][y].y = ((1.0f - (2.0f * ((y + pixelCenter) / imageHeight))));
+			bitMap[x][y].z = -1.0f;
+
+			max_magnitude = sqrt(pow(bitMap[x][y].x, 2) + pow(bitMap[x][y].y, 2) + pow(bitMap[x][y].z, 2));
+
+			bitMap[x][y].x = int(abs(bitMap[x][y].x / max_magnitude) * maxColorComponent);
+			bitMap[x][y].y = int(abs(bitMap[x][y].y / max_magnitude) * maxColorComponent);
+			bitMap[x][y].z = int(abs(bitMap[x][y].z / max_magnitude) * maxColorComponent);
+		}
+	}
+}
+
 int main() {
 	static Bitmap bitMap;
 
-	toScreenSpaceAspect(bitMap);
+	normalize(bitMap);
 
-	std::ofstream ppmFileStream("Screen_space_z255_aspect.ppm", std::ios::out | std::ios::binary);
+	std::ofstream ppmFileStream("Normalized_final.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";
 	ppmFileStream << imageWidth << " " << imageHeight << "\n";
 	ppmFileStream << maxColorComponent << "\n";
