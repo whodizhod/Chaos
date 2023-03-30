@@ -17,9 +17,9 @@ using Bitmap = std::array <std::array <Vec3f, imageHeight>, imageWidth>;
 void toNDC(Bitmap& bitMap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-			bitMap[x][y].x = int((x + pixelCenter) / imageWidth * maxColorComponent);
-			bitMap[x][y].y = int((y + pixelCenter) / imageHeight * maxColorComponent);
-			bitMap[x][y].z = int(abs(-1.0f * maxColorComponent));
+			bitMap[x][y].x = (x + pixelCenter) / imageWidth * maxColorComponent;
+			bitMap[x][y].y = (y + pixelCenter) / imageHeight * maxColorComponent;
+			bitMap[x][y].z = std::abs(-1.0f * maxColorComponent);
 		}
 	}
 }
@@ -29,9 +29,9 @@ void toNDC(Bitmap& bitMap) {
 void toScreenSpace(Bitmap& bitMap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-			bitMap[x][y].x = int(abs((2.0f * ((x + pixelCenter) / imageWidth) - 1.0f) * maxColorComponent));
-			bitMap[x][y].y = int(abs((1.0f - (2.0f * ((y + pixelCenter) / imageHeight))) * maxColorComponent ));
-			bitMap[x][y].z = int(abs(-1.0f * maxColorComponent));
+			bitMap[x][y].x = std::abs((2.0f * ((x + pixelCenter) / imageWidth) - 1.0f) * maxColorComponent);
+			bitMap[x][y].y = std::abs((1.0f - (2.0f * ((y + pixelCenter) / imageHeight))) * maxColorComponent);
+			bitMap[x][y].z = std::abs(-1.0f * maxColorComponent);
 		}
 	}
 }
@@ -41,9 +41,9 @@ void toScreenSpace(Bitmap& bitMap) {
 void toScreenSpaceAspect(Bitmap& bitMap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-			bitMap[x][y].x = int(abs(((2.0f * ((x + pixelCenter) / imageWidth)) - 1.0f) * (float(imageWidth)/float(imageHeight)) * maxColorComponent));
-			bitMap[x][y].y = int(abs((1.0f - (2.0f * ((y + pixelCenter) / imageHeight))) * maxColorComponent));
-			bitMap[x][y].z = int(abs(-1.0f * maxColorComponent));
+			bitMap[x][y].x = std::abs(((2.0f * ((x + pixelCenter) / imageWidth)) - 1.0f) * (float(imageWidth) / float(imageHeight)) * maxColorComponent);
+			bitMap[x][y].y = std::abs((1.0f - (2.0f * ((y + pixelCenter) / imageHeight))) * maxColorComponent);
+			bitMap[x][y].z = std::abs(-1.0f * maxColorComponent);
 		}
 	}
 }
@@ -51,20 +51,19 @@ void toScreenSpaceAspect(Bitmap& bitMap) {
 // Converts coordinates to Screen space
 // with aspect ratio and normalizes the vectors
 void normalize(Bitmap& bitMap) {
-	float max_magnitude = 1;
+	float max_magnitude = 1.0f;
 
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-
 			bitMap[x][y].x = (((2.0f * ((x + pixelCenter) / imageWidth)) - 1.0f) * (float(imageWidth) / float(imageHeight)));
-			bitMap[x][y].y = ((1.0f - (2.0f * ((y + pixelCenter) / imageHeight))));
+			bitMap[x][y].y = (1.0f - (2.0f * ((y + pixelCenter) / imageHeight)));
 			bitMap[x][y].z = -1.0f;
 
-			max_magnitude = sqrt(pow(bitMap[x][y].x, 2) + pow(bitMap[x][y].y, 2) + pow(bitMap[x][y].z, 2));
+			max_magnitude = std::sqrt(std::pow(bitMap[x][y].x, 2) + std::pow(bitMap[x][y].y, 2) + std::pow(bitMap[x][y].z, 2));
 
-			bitMap[x][y].x = int(abs(bitMap[x][y].x / max_magnitude) * maxColorComponent);
-			bitMap[x][y].y = int(abs(bitMap[x][y].y / max_magnitude) * maxColorComponent);
-			bitMap[x][y].z = int(abs(bitMap[x][y].z / max_magnitude) * maxColorComponent);
+			bitMap[x][y].x = std::abs(bitMap[x][y].x / max_magnitude) * maxColorComponent;
+			bitMap[x][y].y = std::abs(bitMap[x][y].y / max_magnitude) * maxColorComponent;
+			bitMap[x][y].z = std::abs(bitMap[x][y].z / max_magnitude) * maxColorComponent;
 		}
 	}
 }
@@ -81,7 +80,7 @@ int main() {
 
 	for (int rowIdx = 0; rowIdx < imageHeight; ++rowIdx) {
 		for (int colIdx = 0; colIdx < imageWidth; ++colIdx) {
-			ppmFileStream << bitMap[colIdx][rowIdx].x << " " << bitMap[colIdx][rowIdx].y << " " << bitMap[colIdx][rowIdx].z << "\t";
+			ppmFileStream << int(bitMap[colIdx][rowIdx].x) << " " << int(bitMap[colIdx][rowIdx].y) << " " << int(bitMap[colIdx][rowIdx].z) << "\t";
 		}
 		ppmFileStream << "\n";
 	}
