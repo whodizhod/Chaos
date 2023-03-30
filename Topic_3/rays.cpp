@@ -15,57 +15,87 @@ static const float pixelCenter = 0.5;
 using Vec3f = Vec3 <float>;
 using Bitmap = std::vector <std::vector <Vec3f> >;
 
-// Converts coordinates to NDC space
-void toNDC(Bitmap& bitMap) {
+float centralize(const int& n) {
+	return (n + pixelCenter);
+}
+
+float calculate_ndc_space_x(const int& x) {
+	return centralize(x) / imageWidth;
+}
+
+float calculate_ndc_space_y(const int& y) {
+	return centralize(y) / imageHeight;
+}
+
+float calculate_screen_space_x(const int& x) {
+	return (2.0f * calculate_ndc_space_x(x)) - 1.0f;
+}
+
+float calculate_screen_space_y(const int& y) {
+	return 1.0f - (2.0f * calculate_ndc_space_y(y));
+}
+
+void convert_to_ndc_space(Bitmap& bitmap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-			bitMap[x][y].x = (x + pixelCenter) / imageWidth * maxColorComponent;
-			bitMap[x][y].y = (y + pixelCenter) / imageHeight * maxColorComponent;
-			bitMap[x][y].z = std::abs(-1.0f * maxColorComponent);
+			bitmap[x][y].x = calculate_ndc_space_x(x);
+			bitmap[x][y].y = calculate_ndc_space_y(y);
+			bitmap[x][y].z = -1.0f;
 		}
 	}
 }
 
-// Converts coordinates to Screen space
-// Without aspect ratio
-void toScreenSpace(Bitmap& bitMap) {
+void convert_to_screen_space(Bitmap& bitmap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-			bitMap[x][y].x = std::abs((2.0f * ((x + pixelCenter) / imageWidth) - 1.0f) * maxColorComponent);
-			bitMap[x][y].y = std::abs((1.0f - (2.0f * ((y + pixelCenter) / imageHeight))) * maxColorComponent);
-			bitMap[x][y].z = std::abs(-1.0f * maxColorComponent);
+			bitmap[x][y].x = calculate_screen_space_x(x);
+			bitmap[x][y].y = calculate_screen_space_y(y);
+			bitmap[x][y].z = -1.0f;
 		}
 	}
 }
 
-// Converts coordinates to Screen space
-// With aspect ratio
-void toScreenSpaceAspect(Bitmap& bitMap) {
+void convert_to_screen_space_w_aspect_ratio(Bitmap& bitmap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-			bitMap[x][y].x = std::abs(((2.0f * ((x + pixelCenter) / imageWidth)) - 1.0f) * aspect_ratio) * maxColorComponent);
-			bitMap[x][y].y = std::abs((1.0f - (2.0f * ((y + pixelCenter) / imageHeight))) * maxColorComponent);
-			bitMap[x][y].z = std::abs(-1.0f * maxColorComponent);
+			bitmap[x][y].x = calculate_screen_space_x(x) * aspect_ratio;
+			bitmap[x][y].y = calculate_screen_space_y(y);
+			bitmap[x][y].z = -1.0f;
 		}
 	}
 }
 
-// Converts coordinates to Screen space
-// with aspect ratio and normalizes the vectors
-void normalize(Bitmap& bitMap) {
+void convert_to_normalized(Bitmap& bitmap) {
 	float max_magnitude = 1.0f;
 
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-			bitMap[x][y].x = (((2.0f * ((x + pixelCenter) / imageWidth)) - 1.0f) * (float(imageWidth) / float(imageHeight)));
-			bitMap[x][y].y = (1.0f - (2.0f * ((y + pixelCenter) / imageHeight)));
-			bitMap[x][y].z = -1.0f;
+			bitmap[x][y].x = calculate_screen_space_x(x) * aspect_ratio;
+			bitmap[x][y].y = calculate_screen_space_y(y);
+			bitmap[x][y].z = -1.0f;
 
-			max_magnitude = std::sqrt(std::pow(bitMap[x][y].x, 2) + std::pow(bitMap[x][y].y, 2) + std::pow(bitMap[x][y].z, 2));
+			// faster than pow()
+			max_magnitude =
+				std::sqrt(
+					bitmap[x][y].x * bitmap[x][y].x  +
+					bitmap[x][y].y * bitmap[x][y].y  +
+					bitmap[x][y].z * bitmap[x][y].z
+				);
 
-			bitMap[x][y].x = std::abs(bitMap[x][y].x / max_magnitude) * maxColorComponent;
-			bitMap[x][y].y = std::abs(bitMap[x][y].y / max_magnitude) * maxColorComponent;
-			bitMap[x][y].z = std::abs(bitMap[x][y].z / max_magnitude) * maxColorComponent;
+			// faster "bitmap[x][y].n /= max_magnitude"
+			bitmap[x][y].x = bitmap[x][y].x * (1 / max_magnitude);
+			bitmap[x][y].y = bitmap[x][y].y * (1 / max_magnitude);
+			bitmap[x][y].z = bitmap[x][y].z * (1 / max_magnitude);
+		}
+	}
+}
+
+void colorize_vectors(Bitmap& bitmap) {
+	for (int y = 0; y < imageHeight; ++y) {
+		for (int x = 0; x < imageWidth; ++x) {
+			bitmap[x][y].x *= maxColorComponent ;
+			bitmap[x][y].y *= maxColorComponent;
+			bitmap[x][y].z *= maxColorComponent;
 		}
 	}
 }
@@ -73,7 +103,8 @@ void normalize(Bitmap& bitMap) {
 int main() {
 	Bitmap bitmap(imageWidth, std::vector<Vec3f>(imageHeight));
 
-	normalize(bitmap);
+	convert_to_normalized(bitmap);
+	colorize_vectors(bitmap);
 
 	std::ofstream ppmFileStream("Normalized_final.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";
@@ -82,7 +113,9 @@ int main() {
 
 	for (int rowIdx = 0; rowIdx < imageHeight; ++rowIdx) {
 		for (int colIdx = 0; colIdx < imageWidth; ++colIdx) {
-			ppmFileStream << int(bitmap[colIdx][rowIdx].x) << " " << int(bitmap[colIdx][rowIdx].y) << " " << int(bitmap[colIdx][rowIdx].z) << "\t";
+			ppmFileStream << int(std::abs(bitmap[colIdx][rowIdx].x)) << " "
+						  << int(std::abs(bitmap[colIdx][rowIdx].y)) << " "
+						  << int(std::abs(bitmap[colIdx][rowIdx].z)) << "\t";
 		}
 		ppmFileStream << "\n";
 	}
