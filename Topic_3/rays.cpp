@@ -7,6 +7,8 @@
 static const int imageWidth = 1920;
 static const int imageHeight = 1080;
 
+static const float aspect_ratio = float(imageWidth) / float(imageHeight);
+
 static const int maxColorComponent = 255;
 static const float pixelCenter = 0.5;
 
@@ -41,7 +43,7 @@ void toScreenSpace(Bitmap& bitMap) {
 void toScreenSpaceAspect(Bitmap& bitMap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-			bitMap[x][y].x = std::abs(((2.0f * ((x + pixelCenter) / imageWidth)) - 1.0f) * (float(imageWidth) / float(imageHeight)) * maxColorComponent);
+			bitMap[x][y].x = std::abs(((2.0f * ((x + pixelCenter) / imageWidth)) - 1.0f) * aspect_ratio) * maxColorComponent);
 			bitMap[x][y].y = std::abs((1.0f - (2.0f * ((y + pixelCenter) / imageHeight))) * maxColorComponent);
 			bitMap[x][y].z = std::abs(-1.0f * maxColorComponent);
 		}
