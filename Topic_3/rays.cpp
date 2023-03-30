@@ -1,4 +1,4 @@
-#include <array>
+#include <vector>
 #include <fstream>
 #include <cmath>
 #include "vec3.h"
@@ -11,7 +11,7 @@ static const int maxColorComponent = 255;
 static const float pixelCenter = 0.5;
 
 using Vec3f = Vec3 <float>;
-using Bitmap = std::array <std::array <Vec3f, imageHeight>, imageWidth>;
+using Bitmap = std::vector <std::vector <Vec3f> >;
 
 // Converts coordinates to NDC space
 void toNDC(Bitmap& bitMap) {
@@ -69,9 +69,9 @@ void normalize(Bitmap& bitMap) {
 }
 
 int main() {
-	static Bitmap bitMap;
+	Bitmap bitmap(imageWidth, std::vector<Vec3f>(imageHeight));
 
-	normalize(bitMap);
+	normalize(bitmap);
 
 	std::ofstream ppmFileStream("Normalized_final.ppm", std::ios::out | std::ios::binary);
 	ppmFileStream << "P3\n";
@@ -80,7 +80,7 @@ int main() {
 
 	for (int rowIdx = 0; rowIdx < imageHeight; ++rowIdx) {
 		for (int colIdx = 0; colIdx < imageWidth; ++colIdx) {
-			ppmFileStream << int(bitMap[colIdx][rowIdx].x) << " " << int(bitMap[colIdx][rowIdx].y) << " " << int(bitMap[colIdx][rowIdx].z) << "\t";
+			ppmFileStream << int(bitmap[colIdx][rowIdx].x) << " " << int(bitmap[colIdx][rowIdx].y) << " " << int(bitmap[colIdx][rowIdx].z) << "\t";
 		}
 		ppmFileStream << "\n";
 	}
