@@ -77,8 +77,8 @@ void convert_to_normalized(Bitmap& bitmap) {
 			// faster than pow()
 			max_magnitude =
 				std::sqrt(
-					bitmap[x][y].x * bitmap[x][y].x  +
-					bitmap[x][y].y * bitmap[x][y].y  +
+					bitmap[x][y].x * bitmap[x][y].x +
+					bitmap[x][y].y * bitmap[x][y].y +
 					bitmap[x][y].z * bitmap[x][y].z
 				);
 
@@ -93,7 +93,7 @@ void convert_to_normalized(Bitmap& bitmap) {
 void colorize_vectors(Bitmap& bitmap) {
 	for (int y = 0; y < imageHeight; ++y) {
 		for (int x = 0; x < imageWidth; ++x) {
-			bitmap[x][y].x *= maxColorComponent ;
+			bitmap[x][y].x *= maxColorComponent;
 			bitmap[x][y].y *= maxColorComponent;
 			bitmap[x][y].z *= maxColorComponent;
 		}
@@ -114,8 +114,8 @@ int main() {
 	for (int rowIdx = 0; rowIdx < imageHeight; ++rowIdx) {
 		for (int colIdx = 0; colIdx < imageWidth; ++colIdx) {
 			ppmFileStream << int(std::abs(bitmap[colIdx][rowIdx].x)) << " "
-						  << int(std::abs(bitmap[colIdx][rowIdx].y)) << " "
-						  << int(std::abs(bitmap[colIdx][rowIdx].z)) << "\t";
+				<< int(std::abs(bitmap[colIdx][rowIdx].y)) << " "
+				<< int(std::abs(bitmap[colIdx][rowIdx].z)) << "\t";
 		}
 		ppmFileStream << "\n";
 	}
